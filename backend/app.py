@@ -13,7 +13,6 @@ app = Flask(__name__)
 CORS(app, cors_allowed_origins="*")
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
-# Configuration for external APIs
 API_KEYS = {
     'alpha_vantage': '0BMYOJ624L3BMXNW',  
     'coingecko': 'CG-YrkoG527cDMsvCaqZ1mDt8zz', 
@@ -22,11 +21,11 @@ API_KEYS = {
 
 @lru_cache(maxsize=100)
 def get_cached_data(cache_key, timestamp):
-    """Cache mechanism with timestamp-based invalidation"""
+    "Cache mechanism with timestamp-based invalidation"
     return None
 
 def fetch_real_stock_data(symbol, days=30):
-    """Fetch real stock data from Alpha Vantage"""
+    "Fetch real stock data from Alpha Vantage"
     try:
         url = f'https://www.alphavantage.co/query'
         params = {
@@ -59,9 +58,8 @@ def fetch_real_stock_data(symbol, days=30):
         return generate_stock_data(symbol, days)
 
 def fetch_real_crypto_data(symbol, hours=24):
-    """Fetch real cryptocurrency data from CoinGecko"""
+    "Fetch real cryptocurrency data from CoinGecko"
     try:
-        # CoinGecko uses lowercase IDs
         coin_map = {
             'BTC': 'bitcoin',
             'ETH': 'ethereum',
@@ -101,7 +99,7 @@ def fetch_real_crypto_data(symbol, hours=24):
         return generate_crypto_data(symbol, hours)
 
 def fetch_real_forex_data(pair, days=30):
-    """Fetch real forex data from exchangerate-api.com"""
+    "fetch real forex data from exchangerate-api.com"
     try:
         base, target = pair.split('/')
         url = f'https://api.exchangerate-api.com/v4/latest/{base}'
@@ -109,12 +107,10 @@ def fetch_real_forex_data(pair, days=30):
         data = response.json()
         
         if 'rates' in data and target in data['rates']:
-            # For historical data, we'll simulate based on current rate
             current_rate = data['rates'][target]
             result = []
             for i in range(days):
                 date = datetime.now() - timedelta(days=days-i)
-                # Add small random fluctuation for historical simulation
                 variation = random.uniform(-0.02, 0.02)
                 rate = current_rate * (1 + variation)
                 result.append({
@@ -130,9 +126,8 @@ def fetch_real_forex_data(pair, days=30):
         print(f"Error fetching forex data: {e}")
         return generate_forex_data(pair, days)
 
-# Mock data generators (fallback)
 def generate_stock_data(symbol, days=30):
-    """Generate realistic stock price data"""
+    "Generate realistic stock price data"
     base_price = random.uniform(50, 500)
     data = []
     current_date = datetime.now() - timedelta(days=days)
@@ -154,7 +149,7 @@ def generate_stock_data(symbol, days=30):
     return data
 
 def generate_crypto_data(symbol, hours=24):
-    """Generate cryptocurrency price data"""
+    "Generate cryptocurrency price data"
     base_price = random.uniform(100, 50000)
     data = []
     current_time = datetime.now() - timedelta(hours=hours)
@@ -174,7 +169,7 @@ def generate_crypto_data(symbol, hours=24):
     return data
 
 def generate_forex_data(pair, days=30):
-    """Generate forex exchange rate data"""
+    "Generate forex exchange rate data"
     base_rate = random.uniform(0.5, 2.0)
     data = []
     current_date = datetime.now() - timedelta(days=days)
@@ -194,7 +189,7 @@ def generate_forex_data(pair, days=30):
     return data
 
 def generate_economic_indicators():
-    """Generate economic indicator data"""
+    "Generate economic indicator data"
     return {
         'gdp': {
             'value': round(random.uniform(20000, 25000), 2),
@@ -223,7 +218,7 @@ def generate_economic_indicators():
     }
 
 def generate_portfolio_data():
-    """Generate portfolio allocation data"""
+    "Generate portfolio allocation data"
     return [
         {'asset': 'Stocks', 'value': random.randint(40000, 60000), 'percentage': random.randint(40, 50)},
         {'asset': 'Bonds', 'value': random.randint(20000, 30000), 'percentage': random.randint(20, 25)},
@@ -232,21 +227,20 @@ def generate_portfolio_data():
         {'asset': 'Cash', 'value': random.randint(5000, 10000), 'percentage': random.randint(5, 8)}
     ]
 
-# WebSocket event handlers
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection"""
+    "Handle client connection"
     print('Client connected')
     emit('connection_response', {'status': 'connected', 'timestamp': datetime.now().isoformat()})
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Handle client disconnection"""
+    "Handle client disconnection"
     print('Client disconnected')
 
 @socketio.on('subscribe')
 def handle_subscribe(data):
-    """Handle subscription to real-time data streams"""
+    "Handle subscription to real-time data streams"
     symbol = data.get('symbol')
     data_type = data.get('type', 'stock')
     
@@ -259,16 +253,14 @@ def handle_subscribe(data):
 
 @socketio.on('unsubscribe')
 def handle_unsubscribe(data):
-    """Handle unsubscription from data streams"""
+    "Handle unsubscription from data streams"
     symbol = data.get('symbol')
     print(f"Client unsubscribed from {symbol}")
 
-# Background task for streaming real-time data
 def stream_market_data():
-    """Background task to stream real-time market data to all connected clients"""
+    "Background task to stream real-time market data to all connected clients"
     while True:
         try:
-            # Generate real-time price updates
             market_update = {
                 'timestamp': datetime.now().isoformat(),
                 'stocks': {
@@ -288,24 +280,22 @@ def stream_market_data():
             }
             
             socketio.emit('market_update', market_update)
-            time.sleep(5)  # Update every 5 seconds
+            time.sleep(5)  
         except Exception as e:
             print(f"Error in stream: {e}")
             time.sleep(5)
 
-# Start background streaming task
 streaming_thread = threading.Thread(target=stream_market_data, daemon=True)
 streaming_thread.start()
 
-# REST API Endpoints
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    """Health check endpoint"""
+    "Health check endpoint"
     return jsonify({'status': 'healthy', 'timestamp': datetime.now().isoformat()})
 
 @app.route('/api/stocks/<symbol>', methods=['GET'])
 def get_stock_data(symbol):
-    """Get stock price data for a symbol"""
+    "Get stock price data for a symbol"
     days = request.args.get('days', default=30, type=int)
     use_real_data = request.args.get('real', default='true', type=str).lower() == 'true'
     
@@ -324,7 +314,7 @@ def get_stock_data(symbol):
 
 @app.route('/api/crypto/<symbol>', methods=['GET'])
 def get_crypto_data(symbol):
-    """Get cryptocurrency data"""
+    "Get cryptocurrency data"
     hours = request.args.get('hours', default=24, type=int)
     use_real_data = request.args.get('real', default='true', type=str).lower() == 'true'
     
@@ -343,11 +333,10 @@ def get_crypto_data(symbol):
 
 @app.route('/api/forex/<pair>', methods=['GET'])
 def get_forex_data(pair):
-    """Get forex exchange rate data"""
+    "Get forex exchange rate data"
     days = request.args.get('days', default=30, type=int)
     use_real_data = request.args.get('real', default='true', type=str).lower() == 'true'
     
-    # Convert EURUSD to EUR/USD format
     if '/' not in pair:
         pair = f"{pair[:3]}/{pair[3:]}"
     
@@ -364,7 +353,7 @@ def get_forex_data(pair):
 
 @app.route('/api/economic-indicators', methods=['GET'])
 def get_economic_indicators():
-    """Get economic indicators"""
+    "Get economic indicators"
     return jsonify(generate_economic_indicators())
 
 @app.route('/api/portfolio', methods=['GET'])
@@ -374,7 +363,7 @@ def get_portfolio():
 
 @app.route('/api/market-overview', methods=['GET'])
 def get_market_overview():
-    """Get comprehensive market overview"""
+    "Get comprehensive market overview"
     indices = {
         'SP500': {'value': 4500 + random.uniform(-100, 100), 'change': random.uniform(-2, 2)},
         'DOW': {'value': 35000 + random.uniform(-500, 500), 'change': random.uniform(-2, 2)},
@@ -402,7 +391,7 @@ def get_market_overview():
 
 @app.route('/api/available-assets', methods=['GET'])
 def get_available_assets():
-    """Get list of available assets for querying"""
+    "Get list of available assets for querying"
     return jsonify({
         'stocks': ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'META', 'NVDA', 'IBM', 'NFLX'],
         'crypto': ['BTC', 'ETH', 'BNB', 'SOL', 'ADA', 'DOT', 'DOGE', 'MATIC'],
@@ -411,7 +400,7 @@ def get_available_assets():
 
 @app.route('/api/realtime/price/<symbol>', methods=['GET'])
 def get_realtime_price(symbol):
-    """Get real-time price for a symbol"""
+    "Get real-time price for a symbol"
     data_type = request.args.get('type', 'stock')
     
     if data_type == 'crypto':
