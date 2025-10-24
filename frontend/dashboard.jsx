@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Settings, RefreshCw, DollarSign, Activity, Wifi, WifiOff } from 'lucide-react';
 
-// API Configuration
 const API_BASE = 'http://localhost:5000/api';
 
 const FinancialDashboard = () => {
@@ -33,7 +32,6 @@ const FinancialDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // Fetch historical data from API
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -56,7 +54,6 @@ const FinancialDashboard = () => {
     setLoading(false);
   };
 
-  // Mock data generators (fallback)
   const generateMockStockData = (symbol) => {
     const data = Array.from({ length: 30 }, (_, i) => ({
       date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -108,7 +105,8 @@ const FinancialDashboard = () => {
     fetchData();
     const interval = setInterval(fetchData, config.refreshInterval * 1000);
     return () => clearInterval(interval);
-  }, [config.stockSymbol, config.cryptoSymbol, config.forexPair, config.refreshInterval, config.useRealData]);
+  }, 
+            [config.stockSymbol, config.cryptoSymbol, config.forexPair, config.refreshInterval, config.useRealData]);
 
   const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
   const isDark = config.theme === 'dark';
@@ -134,15 +132,13 @@ const FinancialDashboard = () => {
           <button
             onClick={fetchData}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all"
-          >
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all">
             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
             Refresh
           </button>
           <button
             onClick={() => setShowConfig(!showConfig)}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all"
-          >
+            className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-all">
             <Settings size={18} />
             Configure
           </button>
@@ -160,8 +156,7 @@ const FinancialDashboard = () => {
                 value={config.stockSymbol}
                 onChange={(e) => setConfig({ ...config, stockSymbol: e.target.value.toUpperCase() })}
                 className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-                placeholder="AAPL"
-              />
+                placeholder="AAPL"/>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Crypto Symbol</label>
@@ -170,8 +165,7 @@ const FinancialDashboard = () => {
                 value={config.cryptoSymbol}
                 onChange={(e) => setConfig({ ...config, cryptoSymbol: e.target.value.toUpperCase() })}
                 className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-                placeholder="BTC"
-              />
+                placeholder="BTC"/>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Forex Pair</label>
@@ -180,8 +174,7 @@ const FinancialDashboard = () => {
                 value={config.forexPair}
                 onChange={(e) => setConfig({ ...config, forexPair: e.target.value.toUpperCase() })}
                 className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
-                placeholder="EUR/USD"
-              />
+                placeholder="EUR/USD"/>
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Refresh Interval (seconds)</label>
@@ -191,8 +184,7 @@ const FinancialDashboard = () => {
                 onChange={(e) => setConfig({ ...config, refreshInterval: parseInt(e.target.value) || 30 })}
                 className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none"
                 min="10"
-                max="300"
-              />
+                max="300"/>
             </div>
             <div className="flex flex-col gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -200,8 +192,7 @@ const FinancialDashboard = () => {
                   type="checkbox"
                   checked={config.useRealData}
                   onChange={(e) => setConfig({ ...config, useRealData: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"/>
                 <span className="text-sm">Use Real Data (API)</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -209,8 +200,7 @@ const FinancialDashboard = () => {
                   type="checkbox"
                   checked={config.showStocks}
                   onChange={(e) => setConfig({ ...config, showStocks: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"/>
                 <span className="text-sm">Show Stocks</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -218,8 +208,7 @@ const FinancialDashboard = () => {
                   type="checkbox"
                   checked={config.showCrypto}
                   onChange={(e) => setConfig({ ...config, showCrypto: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"/>
                 <span className="text-sm">Show Crypto</span>
               </label>
             </div>
@@ -229,8 +218,7 @@ const FinancialDashboard = () => {
                   type="checkbox"
                   checked={config.showForex}
                   onChange={(e) => setConfig({ ...config, showForex: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"/>
                 <span className="text-sm">Show Forex</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -238,8 +226,7 @@ const FinancialDashboard = () => {
                   type="checkbox"
                   checked={config.showPortfolio}
                   onChange={(e) => setConfig({ ...config, showPortfolio: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"/>
                 <span className="text-sm">Show Portfolio</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -247,8 +234,7 @@ const FinancialDashboard = () => {
                   type="checkbox"
                   checked={config.showEconomic}
                   onChange={(e) => setConfig({ ...config, showEconomic: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"/>
                 <span className="text-sm">Show Economic</span>
               </label>
             </div>
@@ -259,8 +245,7 @@ const FinancialDashboard = () => {
               Requires backend API keys (see documentation).
             </p>
           </div>
-        </div>
-      )}
+        </div>)}
 
       {data.marketOverview && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -278,12 +263,10 @@ const FinancialDashboard = () => {
                   <span className="font-semibold">{value.change >= 0 ? '+' : ''}{value.change.toFixed(2)}%</span>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>))}
         </div>
       )}
 
-      {/* Stock Chart */}
       {config.showStocks && data.stocks && (
         <div className={`${cardClass} rounded-lg p-6 mb-6 shadow-lg`}>
           <div className="flex justify-between items-center mb-4">
@@ -302,8 +285,7 @@ const FinancialDashboard = () => {
               <YAxis stroke="#9ca3af" fontSize={12} />
               <Tooltip 
                 contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }}
-                labelStyle={{ color: '#9ca3af' }}
-              />
+                labelStyle={{ color: '#9ca3af' }}/>
               <Line type="monotone" dataKey="close" stroke="#3b82f6" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
@@ -328,8 +310,7 @@ const FinancialDashboard = () => {
                 <YAxis stroke="#9ca3af" fontSize={12} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }}
-                  labelStyle={{ color: '#9ca3af' }}
-                />
+                  labelStyle={{ color: '#9ca3af' }}/>
                 <Line type="monotone" dataKey="price" stroke="#8b5cf6" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -349,8 +330,7 @@ const FinancialDashboard = () => {
                 <YAxis stroke="#9ca3af" fontSize={12} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }}
-                  labelStyle={{ color: '#9ca3af' }}
-                />
+                  labelStyle={{ color: '#9ca3af' }}/>
                 <Line type="monotone" dataKey="rate" stroke="#ec4899" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
