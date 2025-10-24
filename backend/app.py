@@ -283,7 +283,7 @@ def stream_market_data():
             time.sleep(5)  
         except Exception as e:
             print(f"Error in stream: {e}")
-            time.sleep(5)
+            time.sleep(30)
 
 streaming_thread = threading.Thread(target=stream_market_data, daemon=True)
 streaming_thread.start()
